@@ -1,6 +1,7 @@
 package kr.bistroad.orderservice.order
 
 import org.springframework.stereotype.Component
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.getForObject
 import java.util.*
@@ -32,8 +33,12 @@ class OrderMapper {
             )
 
     private fun getReview(storeId: UUID, itemId: UUID, orderId: UUID) =
-            restTemplate.getForObject(
-                    "http://store-service:8080/stores/${storeId}/items/${itemId}/reviews?orderId=${orderId}",
-                    OrderDto.CruRes.Review::class.java
-            )
+            try {
+                restTemplate.getForObject(
+                        "http://store-service:8080/stores/${storeId}/items/${itemId}/reviews?orderId=${orderId}",
+                        OrderDto.CruRes.Review::class.java
+                )
+            } catch (ex: HttpClientErrorException.NotFound) {
+                null
+            }
 }
