@@ -4,7 +4,6 @@ import java.util.*
 
 interface OrderDto {
     data class CreateReq(
-            val storeId: UUID,
             val userId: UUID,
             val requests: List<OrderRequest>,
             val date: Date = Date(),
