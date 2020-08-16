@@ -31,7 +31,7 @@ class OrderService(
     }
 
     fun readOrder(storeId: UUID, id: UUID): OrderDto.CruRes? {
-        val order = orderRepository.findByStoreIdAndId(storeId, id) ?: error("Order not found")
+        val order = orderRepository.findByStoreIdAndId(storeId, id) ?: return null
         return orderMapper.mapToCruRes(order)
     }
 
