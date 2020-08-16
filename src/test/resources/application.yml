@@ -12,3 +12,16 @@ spring:
         dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
     show-sql: true
+security:
+  jwt:
+    token:
+      public-key: |
+        -----BEGIN PUBLIC KEY-----
+        MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmVhjuyWSw7EiKflwXJ6L
+        8df4el7VwNgxczMTGwRo5+eP5SvBbbZCVRa8NWLLwXcXlSE462sLTDXTp+zehloc
+        +/aRB6xbkKan8nrRub3RFDJhE6TcoIXl599DlFgIsHW/i11KhJ8K5bUL/dai1E25
+        IZcnVKCly8kxuz5YYzLfCEciyTzHtBlEfetLW/ZiGQHMEKjq8k0tpzCabCByqc+I
+        GYSRUjYrxCwiCBzTN1h+6aW+u0fUv1H6oZ+EAco98RltMDmafN+nIXvW9JL0HY79
+        byBwVjYA/gaocajqyHOHzjPPAs2SP2k/od+hJYMmU/HES1Ek3/9PxyHKozKjbl7a
+        PQIDAQAB
+        -----END PUBLIC KEY-----
