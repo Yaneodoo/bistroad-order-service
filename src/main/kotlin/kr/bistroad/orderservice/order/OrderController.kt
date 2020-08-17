@@ -1,6 +1,7 @@
 package kr.bistroad.orderservice.order
 
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import java.util.*
@@ -30,6 +31,9 @@ class OrderController(
 
     @DeleteMapping("/stores/{storeId}/orders/{id}")
     @PreAuthorize("isAuthenticated() and hasRole('ROLE_ADMIN')")
-    fun deleteOrder(@PathVariable storeId: UUID, @PathVariable id: UUID) =
-        orderService.deleteOrder(storeId, id)
+    fun deleteOrder(@PathVariable storeId: UUID, @PathVariable id: UUID): ResponseEntity<Void> =
+        if (orderService.deleteOrder(storeId, id))
+            ResponseEntity.noContent().build()
+        else
+            ResponseEntity.notFound().build()
 }
