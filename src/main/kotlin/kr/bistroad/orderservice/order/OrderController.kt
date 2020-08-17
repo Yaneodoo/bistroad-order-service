@@ -1,5 +1,6 @@
 package kr.bistroad.orderservice.order
 
+import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import java.util.*
@@ -18,6 +19,7 @@ class OrderController(
 
     @PostMapping("/stores/{storeId}/orders")
     @PreAuthorize("isAuthenticated() and (( #dto.userId == principal.userId ) or hasRole('ROLE_ADMIN'))")
+    @ResponseStatus(HttpStatus.CREATED)
     fun postOrder(@PathVariable storeId: UUID, @RequestBody dto: OrderDto.CreateReq) =
         orderService.createOrder(storeId, dto)
 
