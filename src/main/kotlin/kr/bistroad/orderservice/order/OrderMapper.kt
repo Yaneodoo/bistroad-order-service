@@ -1,8 +1,11 @@
 package kr.bistroad.orderservice.order
 
+import kr.bistroad.orderservice.util.typeRef
+import org.springframework.http.HttpMethod
+import org.springframework.http.RequestEntity
 import org.springframework.stereotype.Component
-import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
+import java.net.URI
 import java.util.*
 
 @Component
@@ -31,13 +34,17 @@ class OrderMapper {
             OrderDto.CruRes.StoreItem::class.java
         )
 
-    private fun getReview(storeId: UUID, itemId: UUID, orderId: UUID) =
-        try {
-            restTemplate.getForObject(
-                "http://store-service:8080/stores/${storeId}/items/${itemId}/reviews?orderId=${orderId}",
-                OrderDto.CruRes.Review::class.java
-            )
-        } catch (ex: HttpClientErrorException.NotFound) {
-            null
+    private fun getReview(storeId: UUID, itemId: UUID, orderId: UUID): OrderDto.CruRes.Review? {
+        val searchOrder = restTemplate.exchange(
+            RequestEntity<List<OrderDto.CruRes.Review>>(
+                HttpMethod.GET,
+                URI("http://review-service:8080/stores/${storeId}/items/${itemId}/reviews?orderId=${orderId}")
+            ),
+            typeRef<List<OrderDto.CruRes.Review>>()
+        )
+        if (searchOrder.statusCode.is2xxSuccessful && !searchOrder.body.isNullOrEmpty()) {
+            return searchOrder.body!!.first()
         }
+        return null
+    }
 }
