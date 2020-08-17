@@ -15,13 +15,13 @@ class OrderPermissionEvaluator : PermissionEvaluator {
     private val restTemplate: RestTemplate = RestTemplate()
 
     override fun hasPermission(authentication: Authentication?, targetDomainObject: Any?, permission: Any?) =
-            throw UnsupportedOperationException()
+        throw UnsupportedOperationException()
 
     override fun hasPermission(
-            authentication: Authentication?,
-            targetId: Serializable?,
-            targetType: String?,
-            permission: Any?
+        authentication: Authentication?,
+        targetId: Serializable?,
+        targetType: String?,
+        permission: Any?
     ): Boolean {
         if (authentication != null && targetType == "Order" && permission is String) {
             val userId = (authentication.principal as UserPrincipal).userId

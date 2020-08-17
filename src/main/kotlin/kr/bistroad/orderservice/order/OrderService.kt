@@ -5,26 +5,26 @@ import java.util.*
 
 @Service
 class OrderService(
-        private val orderRepository: OrderRepository,
-        private val orderMapper: OrderMapper
+    private val orderRepository: OrderRepository,
+    private val orderMapper: OrderMapper
 ) {
     fun createOrder(storeId: UUID, dto: OrderDto.CreateReq): OrderDto.CruRes {
         val order = Order(
-                storeId = storeId,
-                userId = dto.userId,
-                date = dto.date,
-                tableNum = dto.tableNum,
-                progress = dto.progress
+            storeId = storeId,
+            userId = dto.userId,
+            date = dto.date,
+            tableNum = dto.tableNum,
+            progress = dto.progress
         )
         dto.requests
-                .map {
-                    OrderRequest(
-                            itemId = it.itemId,
-                            amount = it.amount
-                    )
-                }.forEach {
-                    order.addRequest(it)
-                }
+            .map {
+                OrderRequest(
+                    itemId = it.itemId,
+                    amount = it.amount
+                )
+            }.forEach {
+                order.addRequest(it)
+            }
 
         orderRepository.save(order)
         return orderMapper.mapToCruRes(order)
