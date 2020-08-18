@@ -1,9 +1,11 @@
 package kr.bistroad.orderservice.order
 
+import kr.bistroad.orderservice.exception.StoreItemNotFoundException
 import kr.bistroad.orderservice.util.typeRef
 import org.springframework.http.HttpMethod
 import org.springframework.http.RequestEntity
 import org.springframework.stereotype.Component
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
 import java.net.URI
 import java.util.*
@@ -29,10 +31,14 @@ class OrderMapper {
     )
 
     private fun getStoreItem(storeId: UUID, itemId: UUID) =
-        restTemplate.getForObject(
-            "http://store-service:8080/stores/${storeId}/items/${itemId}",
-            OrderDto.CruRes.StoreItem::class.java
-        )
+        try {
+            restTemplate.getForObject(
+                "http://store-service:8080/stores/${storeId}/items/${itemId}",
+                OrderDto.CruRes.StoreItem::class.java
+            )
+        } catch (ex: HttpClientErrorException.NotFound) {
+            throw StoreItemNotFoundException(ex)
+        }
 
     private fun getReview(storeId: UUID, itemId: UUID, orderId: UUID): OrderDto.CruRes.Review? {
         val searchOrder = restTemplate.exchange(

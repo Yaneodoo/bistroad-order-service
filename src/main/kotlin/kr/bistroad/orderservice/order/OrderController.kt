@@ -1,5 +1,6 @@
 package kr.bistroad.orderservice.order
 
+import kr.bistroad.orderservice.exception.OrderNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -12,7 +13,7 @@ class OrderController(
 ) {
     @GetMapping("/stores/{storeId}/orders/{id}")
     fun getOrder(@PathVariable storeId: UUID, @PathVariable id: UUID) =
-        orderService.readOrder(storeId, id)
+        orderService.readOrder(storeId, id) ?: throw OrderNotFoundException()
 
     @GetMapping("/stores/{storeId}/orders")
     fun getOrders(@PathVariable storeId: UUID, @RequestParam userId: UUID?) =

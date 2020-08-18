@@ -1,5 +1,6 @@
 package kr.bistroad.orderservice.order
 
+import kr.bistroad.orderservice.exception.OrderNotFoundException
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -44,7 +45,7 @@ class OrderService(
     }
 
     fun patchOrder(storeId: UUID, id: UUID, dto: OrderDto.PatchReq): OrderDto.CruRes {
-        val order = orderRepository.findByStoreIdAndId(storeId, id) ?: error("Order not found")
+        val order = orderRepository.findByStoreIdAndId(storeId, id) ?: throw OrderNotFoundException()
 
         if (dto.progress != null) order.progress = dto.progress
 
