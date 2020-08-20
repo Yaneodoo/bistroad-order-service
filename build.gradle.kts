@@ -47,6 +47,10 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-kubernetes:1.1.4.RELEASE")
     implementation("org.springframework.cloud:spring-cloud-starter-kubernetes-config:1.1.4.RELEASE")
     implementation("org.springframework.cloud:spring-cloud-starter-kubernetes-ribbon:1.1.4.RELEASE")
+
+    // Querydsl
+    api("com.querydsl:querydsl-jpa:4.3.1")
+    kapt("com.querydsl:querydsl-apt:4.3.1:hibernate")
 }
 
 allOpen {
