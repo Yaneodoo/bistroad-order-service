@@ -5,5 +5,5 @@ import org.springframework.data.domain.Pageable
 import java.util.*
 
 interface OrderRepositoryCustom {
-    fun search(storeId: UUID, pageable: Pageable): Page<Order>
+    fun search(storeId: UUID, dto: OrderDto.SearchReq, pageable: Pageable): Page<Order>
 }

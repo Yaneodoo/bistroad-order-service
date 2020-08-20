@@ -1,6 +1,7 @@
 package kr.bistroad.orderservice.order
 
 import kr.bistroad.orderservice.exception.OrderNotFoundException
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -16,8 +17,8 @@ class OrderController(
         orderService.readOrder(storeId, id) ?: throw OrderNotFoundException()
 
     @GetMapping("/stores/{storeId}/orders")
-    fun getOrders(@PathVariable storeId: UUID, @RequestParam userId: UUID?) =
-        orderService.searchOrders(storeId, userId)
+    fun getOrders(@PathVariable storeId: UUID, dto: OrderDto.SearchReq, pageable: Pageable) =
+        orderService.searchOrders(storeId, dto, pageable)
 
     @PostMapping("/stores/{storeId}/orders")
     @PreAuthorize("isAuthenticated() and (( #dto.userId == principal.userId ) or hasRole('ROLE_ADMIN'))")

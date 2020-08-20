@@ -1,6 +1,7 @@
 package kr.bistroad.orderservice.order
 
 import kr.bistroad.orderservice.exception.OrderNotFoundException
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -36,12 +37,9 @@ class OrderService(
         return orderMapper.mapToCruRes(order)
     }
 
-    fun searchOrders(storeId: UUID, userId: UUID?): List<OrderDto.CruRes> {
-        val orders = if (userId == null)
-            orderRepository.findAllByStoreId(storeId)
-        else
-            orderRepository.findAllByStoreIdAndUserId(storeId, userId)
-        return orders.map(orderMapper::mapToCruRes)
+    fun searchOrders(storeId: UUID, dto: OrderDto.SearchReq, pageable: Pageable): List<OrderDto.CruRes> {
+        return orderRepository.search(storeId, dto, pageable)
+            .content.map(orderMapper::mapToCruRes)
     }
 
     fun patchOrder(storeId: UUID, id: UUID, dto: OrderDto.PatchReq): OrderDto.CruRes {

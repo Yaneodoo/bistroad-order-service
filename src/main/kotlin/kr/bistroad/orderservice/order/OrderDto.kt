@@ -16,6 +16,10 @@ interface OrderDto {
         )
     }
 
+    data class SearchReq(
+        val userId: UUID?
+    )
+
     data class PatchReq(
         val progress: Order.Progress?
     )
