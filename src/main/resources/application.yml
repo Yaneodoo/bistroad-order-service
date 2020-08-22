@@ -5,3 +5,25 @@ spring:
     kubernetes:
       config:
         namespace: bistroad-prod
+swagger:
+  doc:
+    operation:
+      order:
+        get-order:
+          description: Get an order by ID
+        get-orders:
+          description: Search orders
+        post-order:
+          description: Create an order
+        patch-order:
+          description: Update an order partially
+        delete-order:
+          description: Delete an order
+    model:
+      page:
+        page:
+          description: Page number
+        size:
+          description: Number of elements on a page
+        sort:
+          description: Sorting properties (e.g. sort=name,desc, sort=price,asc)
