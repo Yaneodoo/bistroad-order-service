@@ -25,3 +25,5 @@ security:
         byBwVjYA/gaocajqyHOHzjPPAs2SP2k/od+hJYMmU/HES1Ek3/9PxyHKozKjbl7a
         PQIDAQAB
         -----END PUBLIC KEY-----
+swagger:
+  host: localhost

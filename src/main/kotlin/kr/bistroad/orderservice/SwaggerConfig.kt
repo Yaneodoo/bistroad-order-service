@@ -2,6 +2,7 @@ package kr.bistroad.orderservice
 
 import com.fasterxml.classmate.TypeResolver
 import io.swagger.annotations.ApiModelProperty
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.domain.Pageable
@@ -15,10 +16,14 @@ import springfox.documentation.spring.web.plugins.Docket
 
 @Configuration
 class SwaggerConfig(
-    private val typeResolver: TypeResolver
+    private val typeResolver: TypeResolver,
+
+    @Value("\${swagger.host}")
+    private val host: String
 ) {
     @Bean
     fun swaggerDocket() = Docket(DocumentationType.OAS_30)
+        .host(host)
         .apiInfo(
             ApiInfoBuilder().title("Order API").build()
         )
