@@ -1,0 +1,26 @@
+steps:
+  - name: 'gradle:6.4.1-jdk8'
+    id: Gradle
+    entrypoint: "gradle"
+    args: [ 'build' ]
+  - name: "gcr.io/cloud-builders/docker"
+    id: Build Image
+    args: [ "build", "-t", "asia.gcr.io/bistroad-1/bistroad-order-service:$BRANCH_NAME-$COMMIT_SHA", "." ]
+  - name: "gcr.io/cloud-builders/docker"
+    id: Push Image
+    args: [ "push", "asia.gcr.io/bistroad-1/bistroad-order-service:$BRANCH_NAME-$COMMIT_SHA" ]
+  - name: 'gcr.io/cloud-builders/kubectl'
+    id: Update Deployment
+    args: [
+        'set',
+        'image',
+        'deployment',
+        'order-service',
+        'order-service=asia.gcr.io/bistroad-1/bistroad-order-service:$BRANCH_NAME-$COMMIT_SHA',
+        '--record=true',
+        '-n',
+        'bistroad-prod'
+    ]
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=asia-northeast3-a'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=bistroad'
