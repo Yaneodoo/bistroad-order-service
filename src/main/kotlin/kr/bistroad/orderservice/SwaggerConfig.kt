@@ -10,8 +10,12 @@ import springfox.documentation.builders.ApiInfoBuilder
 import springfox.documentation.builders.PathSelectors.any
 import springfox.documentation.builders.RequestHandlerSelectors.basePackage
 import springfox.documentation.schema.AlternateTypeRules.newRule
+import springfox.documentation.service.ApiKey
+import springfox.documentation.service.AuthorizationScope
+import springfox.documentation.service.SecurityReference
 import springfox.documentation.service.Tag
 import springfox.documentation.spi.DocumentationType
+import springfox.documentation.spi.service.contexts.SecurityContext
 import springfox.documentation.spring.web.plugins.Docket
 
 @Configuration
@@ -22,7 +26,7 @@ class SwaggerConfig(
     private val host: String
 ) {
     @Bean
-    fun swaggerDocket() = Docket(DocumentationType.OAS_30)
+    fun swaggerDocket(): Docket = Docket(DocumentationType.OAS_30)
         .host(host)
         .apiInfo(
             ApiInfoBuilder().title("Order API").build()
@@ -37,7 +41,24 @@ class SwaggerConfig(
         .select()
         .apis(basePackage("org.springframework.boot").negate())
         .paths(any())
-        .build()!!
+        .build()
+        .securitySchemes(listOf(apiKey()))
+        .securityContexts(listOf(securityContext()))
+
+    fun apiKey() =
+        ApiKey("Bearer", "Authorization", "header")
+
+    fun securityContext(): SecurityContext =
+        SecurityContext.builder()
+            .securityReferences(defaultAuth())
+            .build()
+
+    fun defaultAuth() = listOf(
+        SecurityReference(
+            "Bearer",
+            arrayOf(AuthorizationScope("global", "accessEverything"))
+        )
+    )
 
     data class Page(
         @ApiModelProperty("\${swagger.doc.model.page.page.description}")
