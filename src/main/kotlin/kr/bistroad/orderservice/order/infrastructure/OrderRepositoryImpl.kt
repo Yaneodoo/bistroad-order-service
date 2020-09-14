@@ -1,7 +1,9 @@
-package kr.bistroad.orderservice.order
+package kr.bistroad.orderservice.order.infrastructure
 
 import com.querydsl.core.BooleanBuilder
-import kr.bistroad.orderservice.order.QOrder.order
+import kr.bistroad.orderservice.order.domain.QOrder.order
+import kr.bistroad.orderservice.order.application.OrderDto
+import kr.bistroad.orderservice.order.domain.Order
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable

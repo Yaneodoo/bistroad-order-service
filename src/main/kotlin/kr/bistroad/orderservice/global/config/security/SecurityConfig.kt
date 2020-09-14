@@ -1,6 +1,5 @@
-package kr.bistroad.orderservice.security
+package kr.bistroad.orderservice.global.config.security
 
-import kr.bistroad.orderservice.order.OrderPermissionEvaluator
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity

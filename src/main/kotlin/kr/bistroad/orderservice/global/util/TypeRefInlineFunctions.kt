@@ -1,4 +1,4 @@
-package kr.bistroad.orderservice.util
+package kr.bistroad.orderservice.global.util
 
 import org.springframework.core.ParameterizedTypeReference
 

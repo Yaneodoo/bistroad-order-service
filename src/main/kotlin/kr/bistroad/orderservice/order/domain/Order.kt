@@ -1,4 +1,4 @@
-package kr.bistroad.orderservice.order
+package kr.bistroad.orderservice.order.domain
 
 import org.hibernate.annotations.GenericGenerator
 import java.util.*

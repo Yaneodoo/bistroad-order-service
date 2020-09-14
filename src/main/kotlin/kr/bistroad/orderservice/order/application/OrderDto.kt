@@ -1,5 +1,6 @@
-package kr.bistroad.orderservice.order
+package kr.bistroad.orderservice.order.application
 
+import kr.bistroad.orderservice.order.domain.Order
 import java.util.*
 
 interface OrderDto {

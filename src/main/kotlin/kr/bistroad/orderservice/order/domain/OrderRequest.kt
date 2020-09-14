@@ -1,4 +1,4 @@
-package kr.bistroad.orderservice.order
+package kr.bistroad.orderservice.order.domain
 
 import java.util.*
 import javax.persistence.*

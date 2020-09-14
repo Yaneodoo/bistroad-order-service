@@ -1,6 +1,10 @@
-package kr.bistroad.orderservice.order
+package kr.bistroad.orderservice.order.application
 
-import kr.bistroad.orderservice.exception.OrderNotFoundException
+import kr.bistroad.orderservice.global.error.exception.OrderNotFoundException
+import kr.bistroad.orderservice.order.domain.Order
+import kr.bistroad.orderservice.order.domain.OrderRequest
+import kr.bistroad.orderservice.order.infrastructure.OrderMapper
+import kr.bistroad.orderservice.order.infrastructure.OrderRepository
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.util.*

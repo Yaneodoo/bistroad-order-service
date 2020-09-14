@@ -1,4 +1,4 @@
-package kr.bistroad.orderservice.security
+package kr.bistroad.orderservice.global.config.security
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws

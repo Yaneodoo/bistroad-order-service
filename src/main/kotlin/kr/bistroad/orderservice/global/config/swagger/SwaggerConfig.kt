@@ -1,4 +1,4 @@
-package kr.bistroad.orderservice
+package kr.bistroad.orderservice.global.config.swagger
 
 import com.fasterxml.classmate.TypeResolver
 import io.swagger.annotations.ApiModelProperty

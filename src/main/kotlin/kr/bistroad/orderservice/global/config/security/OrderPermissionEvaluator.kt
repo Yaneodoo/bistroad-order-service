@@ -1,7 +1,6 @@
-package kr.bistroad.orderservice.order
+package kr.bistroad.orderservice.global.config.security
 
-import kr.bistroad.orderservice.security.UserPrincipal
-import kr.bistroad.orderservice.store.Store
+import kr.bistroad.orderservice.order.infrastructure.Store
 import org.springframework.security.access.PermissionEvaluator
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Component
