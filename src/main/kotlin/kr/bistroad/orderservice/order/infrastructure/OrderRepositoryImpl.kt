@@ -9,13 +9,13 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import org.springframework.stereotype.Component
-import java.util.*
 
 @Component
 class OrderRepositoryImpl : QuerydslRepositorySupport(Order::class.java), OrderRepositoryCustom {
-    override fun search(storeId: UUID, dto: OrderDto.SearchReq, pageable: Pageable): Page<Order> {
+    override fun search(dto: OrderDto.SearchReq, pageable: Pageable): Page<Order> {
         val booleanBuilder = BooleanBuilder()
-            .and(order.storeId.eq(storeId))
+
+        if (dto.storeId != null) booleanBuilder.and(order.storeId.eq(dto.storeId))
         if (dto.userId != null) booleanBuilder.and(order.userId.eq(dto.userId))
 
         val query = from(order)

@@ -6,6 +6,7 @@ import java.util.*
 interface OrderDto {
     data class CreateReq(
         val userId: UUID,
+        val storeId: UUID,
         val requests: List<OrderRequest>,
         val date: Date = Date(),
         val tableNum: Int,
@@ -18,7 +19,8 @@ interface OrderDto {
     }
 
     data class SearchReq(
-        val userId: UUID?
+        val userId: UUID?,
+        val storeId: UUID?
     )
 
     data class PatchReq(

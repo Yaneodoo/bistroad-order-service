@@ -31,7 +31,7 @@ class SwaggerConfig(
         .apiInfo(
             ApiInfoBuilder().title("Order API").build()
         )
-        .tags(Tag("/stores/**/orders", "Order API"))
+        .tags(Tag("/orders", "Order API"))
         .alternateTypeRules(
             newRule(
                 typeResolver.resolve(Pageable::class.java),
