@@ -24,7 +24,7 @@ class OrderMapper {
             OrderDto.CruRes.OrderRequest(
                 item = getStoreItem(entity.storeId, it.itemId) ?: error("Item not found"),
                 amount = it.amount,
-                review = getReview(entity.id!!)
+                hasReview = hasReview(entity.id!!)
             )
         },
         date = entity.date,
@@ -42,17 +42,17 @@ class OrderMapper {
             throw StoreItemNotFoundException(ex)
         }
 
-    private fun getReview(orderId: UUID): OrderDto.CruRes.Review? {
+    private fun hasReview(orderId: UUID): Boolean {
         val searchOrder = restTemplate.exchange(
-            RequestEntity<List<OrderDto.CruRes.Review>>(
+            RequestEntity<List<Any>>(
                 HttpMethod.GET,
                 URI("http://review-service:8080/reviews?orderId=$orderId")
             ),
-            typeRef<List<OrderDto.CruRes.Review>>()
+            typeRef<List<Any>>()
         )
         if (searchOrder.statusCode.is2xxSuccessful && !searchOrder.body.isNullOrEmpty()) {
-            return searchOrder.body!!.first()
+            return searchOrder.body!!.isNotEmpty()
         }
-        return null
+        return false
     }
 }

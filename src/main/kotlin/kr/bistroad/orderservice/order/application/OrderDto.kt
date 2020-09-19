@@ -39,7 +39,7 @@ interface OrderDto {
         data class OrderRequest(
             val item: StoreItem,
             val amount: Int,
-            val review: Review?
+            val hasReview: Boolean
         )
 
         data class StoreItem(
@@ -49,14 +49,6 @@ interface OrderDto {
             val price: Double,
             val photoUri: String?,
             val stars: Double
-        )
-
-        data class Review(
-            val id: UUID,
-            val writerId: UUID,
-            val orderId: UUID,
-            val contents: String,
-            val stars: Int
         )
     }
 }
