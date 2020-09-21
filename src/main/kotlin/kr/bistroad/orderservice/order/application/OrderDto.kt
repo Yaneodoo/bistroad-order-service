@@ -4,30 +4,26 @@ import kr.bistroad.orderservice.order.domain.Order
 import java.util.*
 
 interface OrderDto {
-    data class CreateReq(
+    data class ForCreate(
+        val id: UUID? = null,
         val userId: UUID,
         val storeId: UUID,
         val requests: List<OrderRequest>,
         val date: Date = Date(),
         val tableNum: Int,
         val progress: Order.Progress
-    ) {
+    ) : OrderDto {
         data class OrderRequest(
             val itemId: UUID,
             val amount: Int
         )
     }
 
-    data class SearchReq(
-        val userId: UUID?,
-        val storeId: UUID?
-    )
-
-    data class PatchReq(
+    data class ForUpdate(
         val progress: Order.Progress?
-    )
+    ) : OrderDto
 
-    data class CruRes(
+    data class ForResult(
         val id: UUID,
         val storeId: UUID,
         val userId: UUID,
@@ -35,7 +31,7 @@ interface OrderDto {
         val date: Date,
         val tableNum: Int,
         val progress: Order.Progress
-    ) {
+    ) : OrderDto {
         data class OrderRequest(
             val item: StoreItem,
             val amount: Int,

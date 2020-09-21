@@ -16,12 +16,12 @@ import java.util.*
 class OrderMapper {
     private val restTemplate: RestTemplate = RestTemplate()
 
-    fun mapToCruRes(entity: Order) = OrderDto.CruRes(
+    fun mapToDtoForResult(entity: Order) = OrderDto.ForResult(
         id = entity.id!!,
         storeId = entity.storeId,
         userId = entity.userId,
         requests = entity.requests.map {
-            OrderDto.CruRes.OrderRequest(
+            OrderDto.ForResult.OrderRequest(
                 item = getStoreItem(entity.storeId, it.itemId) ?: error("Item not found"),
                 amount = it.amount,
                 hasReview = hasReview(entity.id!!)
@@ -36,7 +36,7 @@ class OrderMapper {
         try {
             restTemplate.getForObject(
                 "http://store-service:8080/stores/${storeId}/items/${itemId}",
-                OrderDto.CruRes.StoreItem::class.java
+                OrderDto.ForResult.StoreItem::class.java
             )
         } catch (ex: HttpClientErrorException.NotFound) {
             throw StoreItemNotFoundException(ex)

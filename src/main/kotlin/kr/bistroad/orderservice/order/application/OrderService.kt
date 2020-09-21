@@ -10,7 +10,6 @@ import kr.bistroad.orderservice.order.infrastructure.StoreService
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.AccessDeniedException
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -20,7 +19,7 @@ class OrderService(
     private val orderMapper: OrderMapper,
     private val storeService: StoreService
 ) {
-    fun createOrder(dto: OrderDto.CreateReq): OrderDto.CruRes {
+    fun createOrder(dto: OrderDto.ForCreate): OrderDto.ForResult {
         val order = Order(
             storeId = dto.storeId,
             userId = dto.userId,
@@ -39,20 +38,27 @@ class OrderService(
             }
 
         orderRepository.save(order)
-        return orderMapper.mapToCruRes(order)
+        return orderMapper.mapToDtoForResult(order)
     }
 
-    fun readOrder(id: UUID): OrderDto.CruRes? {
+    fun readOrder(id: UUID): OrderDto.ForResult? {
         val order = orderRepository.findByIdOrNull(id) ?: return null
-        return orderMapper.mapToCruRes(order)
+        return orderMapper.mapToDtoForResult(order)
     }
 
-    fun searchOrders(dto: OrderDto.SearchReq, pageable: Pageable): List<OrderDto.CruRes> {
-        return orderRepository.search(dto, pageable)
-            .content.map(orderMapper::mapToCruRes)
-    }
+    fun searchOrders(
+        userId: UUID?,
+        storeId: UUID?,
+        pageable: Pageable
+    ): List<OrderDto.ForResult> =
+        orderRepository.search(
+            userId = userId,
+            storeId = storeId,
+            pageable = pageable
+        ).content
+            .map(orderMapper::mapToDtoForResult)
 
-    fun patchOrder(id: UUID, dto: OrderDto.PatchReq): OrderDto.CruRes {
+    fun updateOrder(id: UUID, dto: OrderDto.ForUpdate): OrderDto.ForResult {
         val order = orderRepository.findByIdOrNull(id) ?: throw OrderNotFoundException()
         val store = storeService.getStore(order.storeId) ?: throw IllegalStateException("Store not found")
 
@@ -62,7 +68,7 @@ class OrderService(
         if (dto.progress != null) order.progress = dto.progress
 
         orderRepository.save(order)
-        return orderMapper.mapToCruRes(order)
+        return orderMapper.mapToDtoForResult(order)
     }
 
     fun deleteOrder(id: UUID): Boolean {
