@@ -12,7 +12,7 @@ class OrderRequest(
 
     @ManyToOne
     @JoinColumn(name = "orderId")
-    var order: Order? = null,
+    var requestedOrder: RequestedOrder? = null,
 
     @Column(columnDefinition = "BINARY(16)")
     val itemId: UUID,

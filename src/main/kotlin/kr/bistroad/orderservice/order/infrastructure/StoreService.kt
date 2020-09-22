@@ -7,9 +7,9 @@ import org.springframework.web.client.getForObject
 import java.util.*
 
 @Component
-class StoreService {
-    private val restTemplate: RestTemplate = RestTemplate()
-
+class StoreService(
+    private val restTemplate: RestTemplate
+) {
     fun getStore(id: UUID) = try {
         restTemplate.getForObject<Store>("http://store-service:8080/stores/$id")
     } catch (ex: HttpClientErrorException.NotFound) {

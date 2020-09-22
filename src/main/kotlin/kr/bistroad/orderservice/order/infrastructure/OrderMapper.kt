@@ -3,7 +3,7 @@ package kr.bistroad.orderservice.order.infrastructure
 import kr.bistroad.orderservice.global.error.exception.StoreItemNotFoundException
 import kr.bistroad.orderservice.global.util.typeRef
 import kr.bistroad.orderservice.order.application.OrderDto
-import kr.bistroad.orderservice.order.domain.Order
+import kr.bistroad.orderservice.order.domain.RequestedOrder
 import org.springframework.http.HttpMethod
 import org.springframework.http.RequestEntity
 import org.springframework.stereotype.Component
@@ -13,10 +13,10 @@ import java.net.URI
 import java.util.*
 
 @Component
-class OrderMapper {
-    private val restTemplate: RestTemplate = RestTemplate()
-
-    fun mapToDtoForResult(entity: Order) = OrderDto.ForResult(
+class OrderMapper(
+    private val restTemplate: RestTemplate
+) {
+    fun mapToDtoForResult(entity: RequestedOrder) = OrderDto.ForResult(
         id = entity.id!!,
         storeId = entity.storeId,
         userId = entity.userId,

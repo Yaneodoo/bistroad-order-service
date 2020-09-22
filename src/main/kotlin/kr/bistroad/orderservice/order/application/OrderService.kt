@@ -2,7 +2,7 @@ package kr.bistroad.orderservice.order.application
 
 import kr.bistroad.orderservice.global.config.security.UserPrincipal
 import kr.bistroad.orderservice.global.error.exception.OrderNotFoundException
-import kr.bistroad.orderservice.order.domain.Order
+import kr.bistroad.orderservice.order.domain.RequestedOrder
 import kr.bistroad.orderservice.order.domain.OrderRequest
 import kr.bistroad.orderservice.order.infrastructure.OrderMapper
 import kr.bistroad.orderservice.order.infrastructure.OrderRepository
@@ -20,7 +20,7 @@ class OrderService(
     private val storeService: StoreService
 ) {
     fun createOrder(dto: OrderDto.ForCreate): OrderDto.ForResult {
-        val order = Order(
+        val order = RequestedOrder(
             storeId = dto.storeId,
             userId = dto.userId,
             date = dto.date,

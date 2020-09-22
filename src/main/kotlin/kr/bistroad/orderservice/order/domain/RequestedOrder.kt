@@ -6,7 +6,7 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "orders")
-class Order(
+class RequestedOrder(
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
@@ -19,7 +19,7 @@ class Order(
     @Column(columnDefinition = "BINARY(16)")
     val userId: UUID,
 
-    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(mappedBy = "requestedOrder", fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
     @Column(name = "requests")
     val _requests: MutableList<OrderRequest> = mutableListOf(),
 
@@ -31,7 +31,7 @@ class Order(
         get() = _requests
 
     fun addRequest(request: OrderRequest) {
-        request.order = this
+        request.requestedOrder = this
         _requests += request
     }
 

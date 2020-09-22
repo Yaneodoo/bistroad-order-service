@@ -1,6 +1,6 @@
 package kr.bistroad.orderservice.order.application
 
-import kr.bistroad.orderservice.order.domain.Order
+import kr.bistroad.orderservice.order.domain.RequestedOrder
 import java.util.*
 
 interface OrderDto {
@@ -11,7 +11,7 @@ interface OrderDto {
         val requests: List<OrderRequest>,
         val date: Date = Date(),
         val tableNum: Int,
-        val progress: Order.Progress
+        val progress: RequestedOrder.Progress
     ) : OrderDto {
         data class OrderRequest(
             val itemId: UUID,
@@ -20,7 +20,7 @@ interface OrderDto {
     }
 
     data class ForUpdate(
-        val progress: Order.Progress?
+        val progress: RequestedOrder.Progress?
     ) : OrderDto
 
     data class ForResult(
@@ -30,7 +30,7 @@ interface OrderDto {
         val requests: List<OrderRequest>,
         val date: Date,
         val tableNum: Int,
-        val progress: Order.Progress
+        val progress: RequestedOrder.Progress
     ) : OrderDto {
         data class OrderRequest(
             val item: StoreItem,

@@ -23,6 +23,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    testImplementation("io.kotest:kotest-assertions-core:4.2.2")
 
     // Spring Boot
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -31,6 +32,7 @@ dependencies {
         exclude(module = "mockito-core")
     }
     testImplementation("com.ninja-squad:springmockk:2.0.3")
+    testImplementation("org.hamcrest:hamcrest:2.2")
 
     // Spring Boot JPA
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
