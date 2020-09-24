@@ -31,7 +31,7 @@ class OrderController(
 
     @PostMapping("/orders")
     @ApiOperation("\${swagger.doc.operation.order.post-order.description}")
-    @PreAuthorize("isAuthenticated() and ( hasRole('ROLE_ADMIN') or ( #dto.userId == principal.userId ) )")
+    @PreAuthorize("isAuthenticated() and ( hasRole('ROLE_ADMIN') or ( #body.userId == principal.userId ) )")
     @ResponseStatus(HttpStatus.CREATED)
     fun postOrder(@RequestBody body: OrderRequest.PostBody) =
         orderService.createOrder(body.toDtoForCreate())
