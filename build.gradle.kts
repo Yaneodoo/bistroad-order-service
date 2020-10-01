@@ -4,10 +4,7 @@ plugins {
     id("org.springframework.boot") version "2.3.2.RELEASE"
     id("io.spring.dependency-management") version "1.0.9.RELEASE"
     kotlin("jvm") version "1.3.72"
-    kotlin("kapt") version "1.3.72"
     kotlin("plugin.spring") version "1.3.72"
-    kotlin("plugin.jpa") version "1.3.72"
-    kotlin("plugin.allopen") version "1.3.72"
 }
 
 group = "kr.bistroad"
@@ -34,10 +31,9 @@ dependencies {
     testImplementation("com.ninja-squad:springmockk:2.0.3")
     testImplementation("org.hamcrest:hamcrest:2.2")
 
-    // Spring Boot JPA
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    runtimeOnly("mysql:mysql-connector-java")
-    testRuntimeOnly("com.h2database:h2")
+    // Spring Boot MongoDB
+    implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+    testImplementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.2.0")
 
     // Spring Boot Security + JWT
     implementation("org.springframework.boot:spring-boot-starter-security")
@@ -50,18 +46,8 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-kubernetes-config:1.1.4.RELEASE")
     implementation("org.springframework.cloud:spring-cloud-starter-kubernetes-ribbon:1.1.4.RELEASE")
 
-    // Querydsl
-    api("com.querydsl:querydsl-jpa:4.3.1")
-    kapt("com.querydsl:querydsl-apt:4.3.1:hibernate")
-
     // Swagger
     implementation("io.springfox:springfox-boot-starter:3.0.0")
-}
-
-allOpen {
-    annotation("javax.persistence.Entity")
-    annotation("javax.persistence.MappedSuperclass")
-    annotation("javax.persistence.Embeddable")
 }
 
 tasks.withType<Test> {

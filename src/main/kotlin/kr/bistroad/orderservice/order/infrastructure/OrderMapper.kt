@@ -17,14 +17,14 @@ class OrderMapper(
     private val restTemplate: RestTemplate
 ) {
     fun mapToDtoForResult(entity: RequestedOrder) = OrderDto.ForResult(
-        id = entity.id!!,
+        id = entity.id,
         storeId = entity.storeId,
         userId = entity.userId,
         requests = entity.requests.map {
             OrderDto.ForResult.OrderRequest(
                 item = getStoreItem(entity.storeId, it.itemId) ?: error("Item not found"),
                 amount = it.amount,
-                hasReview = hasReview(entity.id!!)
+                hasReview = hasReview(entity.id)
             )
         },
         date = entity.date,

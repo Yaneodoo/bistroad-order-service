@@ -11,6 +11,7 @@ import kr.bistroad.orderservice.order.domain.RequestedOrder
 import kr.bistroad.orderservice.order.infrastructure.OrderRepository
 import kr.bistroad.orderservice.order.infrastructure.Store
 import kr.bistroad.orderservice.order.presentation.OrderRequest
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -23,7 +24,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.getForObject
 import java.time.OffsetDateTime
@@ -32,7 +32,6 @@ import java.util.*
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
 internal class OrderIntegrationTests {
     @Autowired
     private lateinit var mockMvc: MockMvc
@@ -44,6 +43,9 @@ internal class OrderIntegrationTests {
     private lateinit var restTemplate: RestTemplate
 
     private val objectMapper: ObjectMapper = ObjectMapper().registerKotlinModule()
+
+    @AfterEach
+    fun clear() = orderRepository.deleteAll()
 
     @Test
     fun `Gets an order`() {

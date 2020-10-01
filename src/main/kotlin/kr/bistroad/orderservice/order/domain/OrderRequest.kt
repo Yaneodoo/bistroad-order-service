@@ -1,21 +1,8 @@
 package kr.bistroad.orderservice.order.domain
 
 import java.util.*
-import javax.persistence.*
 
-@Entity
-@Table(name = "order_requests")
-class OrderRequest(
-    @Id
-    @GeneratedValue
-    val id: Long? = null,
-
-    @ManyToOne
-    @JoinColumn(name = "orderId")
-    var requestedOrder: RequestedOrder? = null,
-
-    @Column(columnDefinition = "BINARY(16)")
+data class OrderRequest(
     val itemId: UUID,
-
     var amount: Int
 )

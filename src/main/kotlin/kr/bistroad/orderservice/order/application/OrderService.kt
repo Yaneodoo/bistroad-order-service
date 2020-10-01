@@ -2,8 +2,8 @@ package kr.bistroad.orderservice.order.application
 
 import kr.bistroad.orderservice.global.config.security.UserPrincipal
 import kr.bistroad.orderservice.global.error.exception.OrderNotFoundException
-import kr.bistroad.orderservice.order.domain.RequestedOrder
 import kr.bistroad.orderservice.order.domain.OrderRequest
+import kr.bistroad.orderservice.order.domain.RequestedOrder
 import kr.bistroad.orderservice.order.infrastructure.OrderMapper
 import kr.bistroad.orderservice.order.infrastructure.OrderRepository
 import kr.bistroad.orderservice.order.infrastructure.StoreService
@@ -34,7 +34,7 @@ class OrderService(
                     amount = it.amount
                 )
             }.forEach {
-                order.addRequest(it)
+                order.requests += it
             }
 
         orderRepository.save(order)
