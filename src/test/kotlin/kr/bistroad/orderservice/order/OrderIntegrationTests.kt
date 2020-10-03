@@ -6,28 +6,21 @@ import com.ninjasquad.springmockk.MockkBean
 import io.kotest.matchers.collections.shouldBeSingleton
 import io.kotest.matchers.shouldBe
 import io.mockk.every
-import kr.bistroad.orderservice.order.application.OrderDto
-import kr.bistroad.orderservice.order.domain.RequestedOrder
+import kr.bistroad.orderservice.order.domain.*
 import kr.bistroad.orderservice.order.infrastructure.OrderRepository
-import kr.bistroad.orderservice.order.infrastructure.Store
 import kr.bistroad.orderservice.order.presentation.OrderRequest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.core.ParameterizedTypeReference
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.http.RequestEntity
-import org.springframework.http.ResponseEntity
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.getForObject
 import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 @SpringBootTest
@@ -49,14 +42,7 @@ internal class OrderIntegrationTests {
 
     @Test
     fun `Gets an order`() {
-        val order = RequestedOrder(
-            storeId = UUID.randomUUID(),
-            userId = UUID.randomUUID(),
-            date = OffsetDateTime.now().toDate(),
-            tableNum = 0,
-            progress = RequestedOrder.Progress.REQUESTED
-        )
-
+        val order = randomOrder()
         orderRepository.save(order)
 
         mockMvc.perform(
@@ -65,42 +51,24 @@ internal class OrderIntegrationTests {
         ).andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("\$.id").value(order.id.toString()))
-            .andExpect(jsonPath("\$.storeId").value(order.storeId.toString()))
-            .andExpect(jsonPath("\$.userId").value(order.userId.toString()))
+            .andExpect(jsonPath("\$.store.id").value(order.store.id.toString()))
+            .andExpect(jsonPath("\$.userId").value(order.customer.id.toString()))
             .andExpect(jsonPath("\$.progress").value(order.progress.toString()))
     }
 
     @Test
     fun `Searches orders`() {
         val now = OffsetDateTime.now()
-        val orderA = RequestedOrder(
-            storeId = UUID.randomUUID(),
-            userId = UUID.randomUUID(),
-            date = now.minusDays(1).toDate(),
-            tableNum = 0,
-            progress = RequestedOrder.Progress.REQUESTED
-        )
-        val orderB = RequestedOrder(
-            storeId = UUID.randomUUID(),
-            userId = UUID.randomUUID(),
-            date = now.toDate(),
-            tableNum = 0,
-            progress = RequestedOrder.Progress.REQUESTED
-        )
-        val orderC = RequestedOrder(
-            storeId = UUID.randomUUID(),
-            userId = UUID.randomUUID(),
-            date = now.minusMinutes(1).toDate(),
-            tableNum = 0,
-            progress = RequestedOrder.Progress.ACCEPTED
-        )
+        val orderA = randomOrder(timestamp = now.minusDays(1))
+        val orderB = randomOrder(timestamp = now)
+        val orderC = randomOrder(timestamp = now.minusMinutes(1))
 
         orderRepository.save(orderA)
         orderRepository.save(orderB)
         orderRepository.save(orderC)
 
         mockMvc.perform(
-            get("/orders?sort=date,desc")
+            get("/orders?sort=timestamp,desc")
                 .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -111,40 +79,40 @@ internal class OrderIntegrationTests {
 
     @Test
     fun `Posts an order`() {
-        val dateString = "2020-09-22T11:31:19.000+00:00"
-        val body = OrderRequest.PostBody(
-            userId = UUID.randomUUID(),
-            storeId = UUID.randomUUID(),
-            requests = listOf(
-                OrderRequest.PostBody.Request(itemId = UUID.randomUUID(), amount = 1),
-                OrderRequest.PostBody.Request(itemId = UUID.randomUUID(), amount = 2)
-            ),
-            date = OffsetDateTime.parse(dateString, DateTimeFormatter.ISO_DATE_TIME).toDate(),
-            tableNum = 0,
-            progress = RequestedOrder.Progress.REQUESTED
+        val store = Store(
+            id = UUID.randomUUID(),
+            owner = StoreOwner(UUID.randomUUID())
         )
-        val item1 = OrderDto.ForResult.StoreItem(
-            id = body.requests[0].itemId,
-            name = "example", description = "example", price = 100.0,
-            photoUri = null, stars = 4.5
+        val item1 = OrderedItem(
+            id = UUID.randomUUID(),
+            name = "example",
+            price = 100.0
         )
-        val item2 = item1.copy(id = body.requests[1].itemId)
+        val item2 = item1.copy(
+            id = UUID.randomUUID()
+        )
 
         every {
-            restTemplate.getForObject(
-                "http://store-service:8080/stores/${body.storeId}/items/${item1.id}",
-                OrderDto.ForResult.StoreItem::class.java
-            )
+            restTemplate.getForObject<Store>("http://store-service:8080/stores/${store.id}")
+        } returns store
+        every {
+            restTemplate.getForObject<OrderedItem>("http://store-service:8080/stores/${store.id}/items/${item1.id}")
         } returns item1
         every {
-            restTemplate.getForObject(
-                "http://store-service:8080/stores/${body.storeId}/items/${item2.id}",
-                OrderDto.ForResult.StoreItem::class.java
-            )
+            restTemplate.getForObject<OrderedItem>("http://store-service:8080/stores/${store.id}/items/${item2.id}")
         } returns item2
-        every {
-            restTemplate.exchange(any<RequestEntity<List<Any>>>(), any<ParameterizedTypeReference<List<Any>>>())
-        } returns ResponseEntity(listOf(Any()), HttpStatus.OK)
+
+        val body = OrderRequest.PostBody(
+            userId = UUID.randomUUID(),
+            storeId = store.id,
+            orderLines = listOf(
+                OrderRequest.PostBody.OrderLine(itemId = item1.id, amount = 1),
+                OrderRequest.PostBody.OrderLine(itemId = item2.id, amount = 2)
+            ),
+            timestamp = "2020-09-22T11:31:19Z",
+            tableNum = 0,
+            progress = OrderProgress.REQUESTED
+        )
 
         mockMvc.perform(
             post("/orders")
@@ -156,33 +124,23 @@ internal class OrderIntegrationTests {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("\$.id").exists())
             .andExpect(jsonPath("\$.userId").value(body.userId.toString()))
-            .andExpect(jsonPath("\$.requests.[0].item.id").value(body.requests[0].itemId.toString()))
-            .andExpect(jsonPath("\$.requests.[1].item.id").value(body.requests[1].itemId.toString()))
-            .andExpect(jsonPath("\$.date").value(dateString))
+            .andExpect(jsonPath("\$.orderLines.[0].item.id").value(body.orderLines[0].itemId.toString()))
+            .andExpect(jsonPath("\$.orderLines.[1].item.id").value(body.orderLines[1].itemId.toString()))
+            .andExpect(jsonPath("\$.timestamp").value(body.timestamp!!))
             .andExpect(jsonPath("\$.progress").value("REQUESTED"))
     }
 
     @Test
     fun `Patches an order`() {
-        val order = RequestedOrder(
-            storeId = UUID.randomUUID(),
-            userId = UUID.randomUUID(),
-            date = OffsetDateTime.now().toDate(),
-            tableNum = 0,
-            progress = RequestedOrder.Progress.REQUESTED
+        val order = randomOrder(
+            timestamp = OffsetDateTime.now(),
+            progress = OrderProgress.REQUESTED
         )
-        val body = OrderRequest.PatchBody(
-            progress = RequestedOrder.Progress.ACCEPTED
-        )
-
         orderRepository.save(order)
 
-        val store = Store(ownerId = order.storeId)
-        every {
-            restTemplate.getForObject<Store>(
-                "http://store-service:8080/stores/${order.storeId}"
-            )
-        } returns store
+        val body = OrderRequest.PatchBody(
+            progress = OrderProgress.ACCEPTED
+        )
 
         mockMvc.perform(
             patch("/orders/${order.id}")
@@ -195,26 +153,12 @@ internal class OrderIntegrationTests {
             .andExpect(jsonPath("\$.id").value(order.id.toString()))
             .andExpect(jsonPath("\$.progress").value("ACCEPTED"))
             .andExpect(jsonPath("\$.tableNum").value(order.tableNum))
-
-        orderRepository.save(order)
     }
 
     @Test
     fun `Deletes an order`() {
-        val orderA = RequestedOrder(
-            storeId = UUID.randomUUID(),
-            userId = UUID.randomUUID(),
-            date = OffsetDateTime.now().toDate(),
-            tableNum = 0,
-            progress = RequestedOrder.Progress.REQUESTED
-        )
-        val orderB = RequestedOrder(
-            storeId = UUID.randomUUID(),
-            userId = UUID.randomUUID(),
-            date = OffsetDateTime.now().toDate(),
-            tableNum = 0,
-            progress = RequestedOrder.Progress.REQUESTED
-        )
+        val orderA = randomOrder()
+        val orderB = randomOrder()
 
         orderRepository.save(orderA)
         orderRepository.save(orderB)
@@ -231,5 +175,37 @@ internal class OrderIntegrationTests {
         orders.first().shouldBe(orderB)
     }
 
-    private fun OffsetDateTime.toDate() = Date.from(this.toInstant())
+    private fun randomOrder(
+        timestamp: OffsetDateTime = OffsetDateTime.now(),
+        progress: OrderProgress = OrderProgress.REQUESTED
+    ) = PlacedOrder(
+        store = Store(
+            id = UUID.randomUUID(),
+            owner = StoreOwner(UUID.randomUUID())
+        ),
+        customer = Customer(
+            id = UUID.randomUUID()
+        ),
+        orderLines = mutableListOf(
+            OrderLine(
+                item = OrderedItem(
+                    id = UUID.randomUUID(),
+                    name = "a",
+                    price = 1000.0
+                ),
+                amount = 1
+            ),
+            OrderLine(
+                item = OrderedItem(
+                    id = UUID.randomUUID(),
+                    name = "b",
+                    price = 0.001
+                ),
+                amount = 2
+            )
+        ),
+        timestamp = timestamp,
+        tableNum = 0,
+        progress = progress
+    )
 }

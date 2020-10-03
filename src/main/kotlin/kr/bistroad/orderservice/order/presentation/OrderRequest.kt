@@ -1,7 +1,9 @@
 package kr.bistroad.orderservice.order.presentation
 
 import kr.bistroad.orderservice.order.application.OrderDto
-import kr.bistroad.orderservice.order.domain.RequestedOrder
+import kr.bistroad.orderservice.order.domain.OrderProgress
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 interface OrderRequest {
@@ -13,25 +15,27 @@ interface OrderRequest {
     data class PostBody(
         val userId: UUID,
         val storeId: UUID,
-        val requests: List<Request>,
-        val date: Date = Date(),
+        val orderLines: List<OrderLine>,
+        val timestamp: String? = null,
         val tableNum: Int,
-        val progress: RequestedOrder.Progress
+        val progress: OrderProgress
     ) {
         fun toDtoForCreate() = OrderDto.ForCreate(
             userId = userId,
             storeId = storeId,
-            requests = requests.map { it.toDtoOrderRequest() },
-            date = date,
+            orderLines = orderLines.map(OrderLine::toDto),
+            timestamp = timestamp?.let {
+                OffsetDateTime.parse(it, DateTimeFormatter.ISO_DATE_TIME)
+            } ?: OffsetDateTime.now(),
             tableNum = tableNum,
             progress = progress
         )
 
-        data class Request(
+        data class OrderLine(
             val itemId: UUID,
             val amount: Int
         ) {
-            fun toDtoOrderRequest() = OrderDto.ForCreate.OrderRequest(
+            fun toDto() = OrderDto.ForCreate.OrderLine(
                 itemId = itemId,
                 amount = amount
             )
@@ -39,7 +43,7 @@ interface OrderRequest {
     }
 
     data class PatchBody(
-        val progress: RequestedOrder.Progress?
+        val progress: OrderProgress?
     ) {
         fun toDtoForUpdate() = OrderDto.ForUpdate(
             progress = progress

@@ -1,50 +1,79 @@
 package kr.bistroad.orderservice.order.application
 
-import kr.bistroad.orderservice.order.domain.RequestedOrder
+import kr.bistroad.orderservice.order.domain.OrderProgress
+import kr.bistroad.orderservice.order.domain.OrderedItem
+import kr.bistroad.orderservice.order.domain.PlacedOrder
+import java.time.OffsetDateTime
 import java.util.*
+import kr.bistroad.orderservice.order.domain.OrderLine as DomainOrderLine
+import kr.bistroad.orderservice.order.domain.Store as DomainStore
 
 interface OrderDto {
     data class ForCreate(
-        val id: UUID? = null,
         val userId: UUID,
         val storeId: UUID,
-        val requests: List<OrderRequest>,
-        val date: Date = Date(),
+        val orderLines: List<OrderLine>,
+        val timestamp: OffsetDateTime = OffsetDateTime.now(),
         val tableNum: Int,
-        val progress: RequestedOrder.Progress
+        val progress: OrderProgress
     ) : OrderDto {
-        data class OrderRequest(
+        data class OrderLine(
             val itemId: UUID,
             val amount: Int
         )
     }
 
     data class ForUpdate(
-        val progress: RequestedOrder.Progress?
+        val progress: OrderProgress?
     ) : OrderDto
 
     data class ForResult(
         val id: UUID,
-        val storeId: UUID,
+        val store: Store,
         val userId: UUID,
-        val requests: List<OrderRequest>,
-        val date: Date,
+        val orderLines: List<OrderLine>,
+        val timestamp: OffsetDateTime,
         val tableNum: Int,
-        val progress: RequestedOrder.Progress
+        val progress: OrderProgress,
+        val hasReview: Boolean
     ) : OrderDto {
-        data class OrderRequest(
-            val item: StoreItem,
-            val amount: Int,
-            val hasReview: Boolean
+        constructor(domain: PlacedOrder) : this(
+            id = domain.id,
+            store = Store(domain.store),
+            userId = domain.customer.id,
+            orderLines = domain.orderLines.map(ForResult::OrderLine),
+            timestamp = domain.timestamp,
+            tableNum = domain.tableNum,
+            progress = domain.progress,
+            hasReview = domain.hasReview
         )
+
+        data class Store(
+            val id: UUID,
+            val ownerId: UUID
+        ) {
+            constructor(domain: DomainStore) : this(domain.id, domain.owner.id)
+        }
+
+        data class OrderLine(
+            val item: StoreItem,
+            val amount: Int
+        ) {
+            constructor(domain: DomainOrderLine) : this(StoreItem(domain.item), domain.amount)
+        }
 
         data class StoreItem(
             val id: UUID,
             val name: String,
-            val description: String,
             val price: Double,
-            val photoUri: String?,
-            val stars: Double
-        )
+            val photoUri: String?
+        ) {
+            constructor(domain: OrderedItem) : this(
+                id = domain.id,
+                name = domain.name,
+                price = domain.price,
+                photoUri = domain.photoUri
+            )
+        }
     }
 }
