@@ -52,6 +52,7 @@ internal class OrderIntegrationTests {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("\$.id").value(order.id.toString()))
             .andExpect(jsonPath("\$.store.id").value(order.store.id.toString()))
+            .andExpect(jsonPath("\$.store.name").value(order.store.name))
             .andExpect(jsonPath("\$.userId").value(order.customer.id.toString()))
             .andExpect(jsonPath("\$.progress").value(order.progress.toString()))
     }
@@ -81,7 +82,8 @@ internal class OrderIntegrationTests {
     fun `Posts an order`() {
         val store = Store(
             id = UUID.randomUUID(),
-            owner = StoreOwner(UUID.randomUUID())
+            owner = StoreOwner(UUID.randomUUID()),
+            name = "Store"
         )
         val item1 = OrderedItem(
             id = UUID.randomUUID(),
@@ -181,7 +183,8 @@ internal class OrderIntegrationTests {
     ) = PlacedOrder(
         store = Store(
             id = UUID.randomUUID(),
-            owner = StoreOwner(UUID.randomUUID())
+            owner = StoreOwner(UUID.randomUUID()),
+            name = "Store"
         ),
         customer = Customer(
             id = UUID.randomUUID()

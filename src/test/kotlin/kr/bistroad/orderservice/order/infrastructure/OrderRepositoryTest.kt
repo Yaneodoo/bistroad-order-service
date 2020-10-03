@@ -48,7 +48,8 @@ internal class OrderRepositoryTest {
     private fun randomOrder() = PlacedOrder(
         store = Store(
             id = UUID.randomUUID(),
-            owner = StoreOwner(UUID.randomUUID())
+            owner = StoreOwner(UUID.randomUUID()),
+            name = "Store"
         ),
         customer = Customer(
             id = UUID.randomUUID()

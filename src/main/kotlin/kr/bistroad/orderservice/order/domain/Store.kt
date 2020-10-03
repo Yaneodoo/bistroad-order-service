@@ -4,5 +4,6 @@ import java.util.*
 
 data class Store(
     val id: UUID,
-    val owner: StoreOwner
+    val owner: StoreOwner,
+    val name: String
 )

@@ -50,9 +50,10 @@ interface OrderDto {
 
         data class Store(
             val id: UUID,
-            val ownerId: UUID
+            val ownerId: UUID,
+            val name: String
         ) {
-            constructor(domain: DomainStore) : this(domain.id, domain.owner.id)
+            constructor(domain: DomainStore) : this(domain.id, domain.owner.id, domain.name)
         }
 
         data class OrderLine(
