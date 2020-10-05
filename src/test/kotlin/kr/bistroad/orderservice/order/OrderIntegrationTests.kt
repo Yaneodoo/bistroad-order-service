@@ -8,6 +8,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.every
 import kr.bistroad.orderservice.order.domain.*
 import kr.bistroad.orderservice.order.infrastructure.OrderRepository
+import kr.bistroad.orderservice.order.infrastructure.RestStoreRepository
 import kr.bistroad.orderservice.order.presentation.OrderRequest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -95,8 +96,8 @@ internal class OrderIntegrationTests {
         )
 
         every {
-            restTemplate.getForObject<Store>("http://store-service:8080/stores/${store.id}")
-        } returns store
+            restTemplate.getForObject<RestStoreRepository.RestStore>("http://store-service:8080/stores/${store.id}")
+        } returns RestStoreRepository.RestStore(store.id, store.owner.id, store.name)
         every {
             restTemplate.getForObject<OrderedItem>("http://store-service:8080/stores/${store.id}/items/${item1.id}")
         } returns item1
