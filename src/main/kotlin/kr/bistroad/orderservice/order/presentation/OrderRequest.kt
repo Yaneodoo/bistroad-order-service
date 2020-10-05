@@ -1,9 +1,11 @@
 package kr.bistroad.orderservice.order.presentation
 
+import kr.bistroad.orderservice.global.error.exception.InvalidDateFormatException
 import kr.bistroad.orderservice.order.application.OrderDto
 import kr.bistroad.orderservice.order.domain.OrderProgress
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.*
 
 interface OrderRequest {
@@ -25,7 +27,11 @@ interface OrderRequest {
             storeId = storeId,
             orderLines = orderLines.map(OrderLine::toDto),
             timestamp = timestamp?.let {
-                OffsetDateTime.parse(it, DateTimeFormatter.ISO_DATE_TIME)
+                try {
+                    OffsetDateTime.parse(it, DateTimeFormatter.ISO_DATE_TIME)
+                } catch (ex: DateTimeParseException) {
+                    throw InvalidDateFormatException(ex)
+                }
             } ?: OffsetDateTime.now(),
             tableNum = tableNum,
             progress = progress
