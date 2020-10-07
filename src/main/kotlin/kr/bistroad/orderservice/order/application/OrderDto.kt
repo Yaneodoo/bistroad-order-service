@@ -6,6 +6,7 @@ import kr.bistroad.orderservice.order.domain.PlacedOrder
 import java.time.OffsetDateTime
 import java.util.*
 import kr.bistroad.orderservice.order.domain.OrderLine as DomainOrderLine
+import kr.bistroad.orderservice.order.domain.Photo as DomainPhoto
 import kr.bistroad.orderservice.order.domain.Store as DomainStore
 
 interface OrderDto {
@@ -63,17 +64,24 @@ interface OrderDto {
             constructor(domain: DomainOrderLine) : this(StoreItem(domain.item), domain.amount)
         }
 
+        data class Photo(
+            val sourceUrl: String,
+            val thumbnailUrl: String
+        ) {
+            constructor(domain: DomainPhoto) : this(domain.sourceUrl, domain.thumbnailUrl)
+        }
+
         data class StoreItem(
             val id: UUID,
             val name: String,
             val price: Double,
-            val photoUri: String?
+            val photo: Photo? = null
         ) {
             constructor(domain: OrderedItem) : this(
                 id = domain.id,
                 name = domain.name,
                 price = domain.price,
-                photoUri = domain.photoUri
+                photo = domain.photo?.let(::Photo)
             )
         }
     }
