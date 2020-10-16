@@ -22,7 +22,7 @@ class OrderRepositoryImpl(
     ): Page<PlacedOrder> {
         val query = Query().with(pageable)
 
-        if (storeId != null) query.addCriteria(Criteria.where("store.owner.id").`is`(storeId))
+        if (storeId != null) query.addCriteria(Criteria.where("store.id").`is`(storeId))
         if (customerId != null) query.addCriteria(Criteria.where("store.customer.id").`is`(customerId))
 
         return mongoTemplate.find<PlacedOrder>(query).toPage(pageable)
