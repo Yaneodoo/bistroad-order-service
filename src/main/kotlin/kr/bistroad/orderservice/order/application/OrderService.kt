@@ -37,6 +37,10 @@ class OrderService(
         )
         orderRepository.save(order)
 
+        for (orderLine in orderLines) {
+            orderedItemRepository.addOrderCount(store.id, orderLine.item.id)
+        }
+
         return OrderDto.ForResult(order)
     }
 
@@ -70,6 +74,12 @@ class OrderService(
     }
 
     fun deleteOrder(id: UUID): Boolean {
+        val order = orderRepository.findByIdOrNull(id) ?: throw OrderNotFoundException()
+
+        for (orderLine in order.orderLines) {
+            orderedItemRepository.subtractOrderCount(order.store.id, orderLine.item.id)
+        }
+
         val numDeleted = orderRepository.removeById(id)
         return numDeleted > 0
     }

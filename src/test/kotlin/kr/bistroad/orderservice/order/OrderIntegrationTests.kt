@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.getForObject
+import org.springframework.web.client.postForObject
 import java.time.OffsetDateTime
 import java.util.*
 
@@ -102,7 +103,17 @@ internal class OrderIntegrationTests {
             restTemplate.getForObject<OrderedItem>("http://store-service:8080/stores/${store.id}/items/${item1.id}")
         } returns item1
         every {
+            restTemplate.postForObject<OrderedItem>(
+                "http://store-service:8080/stores/${store.id}/items/${item1.id}/add-order-count"
+            )
+        } returns item1
+        every {
             restTemplate.getForObject<OrderedItem>("http://store-service:8080/stores/${store.id}/items/${item2.id}")
+        } returns item2
+        every {
+            restTemplate.postForObject<OrderedItem>(
+                "http://store-service:8080/stores/${store.id}/items/${item2.id}/add-order-count"
+            )
         } returns item2
 
         val body = OrderRequest.PostBody(
@@ -165,6 +176,19 @@ internal class OrderIntegrationTests {
 
         orderRepository.save(orderA)
         orderRepository.save(orderB)
+
+        every {
+            restTemplate.postForObject<OrderedItem>(
+                "http://store-service:8080/stores/${orderA.store.id}/items/${orderA.orderLines[0].item.id}" +
+                        "/subtract-order-count"
+            )
+        } returns orderA.orderLines[0].item
+        every {
+            restTemplate.postForObject<OrderedItem>(
+                "http://store-service:8080/stores/${orderA.store.id}/items/${orderA.orderLines[1].item.id}" +
+                        "/subtract-order-count"
+            )
+        } returns orderA.orderLines[1].item
 
         mockMvc.perform(
             delete("/orders/${orderA.id}")
