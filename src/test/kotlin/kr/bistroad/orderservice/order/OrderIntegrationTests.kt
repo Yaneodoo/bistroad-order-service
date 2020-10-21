@@ -104,7 +104,8 @@ internal class OrderIntegrationTests {
         } returns item1
         every {
             restTemplate.postForObject<OrderedItem>(
-                "http://store-service:8080/stores/${store.id}/items/${item1.id}/add-order-count"
+                "http://store-service:8080/stores/${store.id}/items/${item1.id}/add-order-count",
+                any()
             )
         } returns item1
         every {
@@ -112,7 +113,8 @@ internal class OrderIntegrationTests {
         } returns item2
         every {
             restTemplate.postForObject<OrderedItem>(
-                "http://store-service:8080/stores/${store.id}/items/${item2.id}/add-order-count"
+                "http://store-service:8080/stores/${store.id}/items/${item2.id}/add-order-count",
+                any()
             )
         } returns item2
 
@@ -180,13 +182,15 @@ internal class OrderIntegrationTests {
         every {
             restTemplate.postForObject<OrderedItem>(
                 "http://store-service:8080/stores/${orderA.store.id}/items/${orderA.orderLines[0].item.id}" +
-                        "/subtract-order-count"
+                        "/subtract-order-count",
+                any()
             )
         } returns orderA.orderLines[0].item
         every {
             restTemplate.postForObject<OrderedItem>(
                 "http://store-service:8080/stores/${orderA.store.id}/items/${orderA.orderLines[1].item.id}" +
-                        "/subtract-order-count"
+                        "/subtract-order-count",
+                any()
             )
         } returns orderA.orderLines[1].item
 
