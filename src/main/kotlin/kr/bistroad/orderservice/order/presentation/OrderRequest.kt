@@ -55,4 +55,7 @@ interface OrderRequest {
             progress = progress
         )
     }
+
+    data class AddReviewBody(val reviewId: UUID)
+    data class RemoveReviewBody(val reviewId: UUID)
 }

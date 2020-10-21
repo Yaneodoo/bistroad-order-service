@@ -16,7 +16,7 @@ data class PlacedOrder(
     val timestamp: OffsetDateTime,
     val tableNum: Int,
     var progress: OrderProgress,
-    val reviews: MutableList<Review> = mutableListOf()
+    val reviews: MutableSet<Review> = mutableSetOf()
 ) {
     val hasReview: Boolean
         get() = reviews.isNotEmpty()

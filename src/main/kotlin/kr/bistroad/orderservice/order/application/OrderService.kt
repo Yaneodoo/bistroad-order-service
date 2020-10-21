@@ -83,4 +83,22 @@ class OrderService(
         val numDeleted = orderRepository.removeById(id)
         return numDeleted > 0
     }
+
+    fun addReview(id: UUID, reviewId: UUID): OrderDto.ForResult {
+        val order = orderRepository.findByIdOrNull(id) ?: throw OrderNotFoundException()
+
+        order.reviews += Review(reviewId)
+        orderRepository.save(order)
+
+        return OrderDto.ForResult(order)
+    }
+
+    fun removeReview(id: UUID, reviewId: UUID): OrderDto.ForResult {
+        val order = orderRepository.findByIdOrNull(id) ?: throw OrderNotFoundException()
+
+        order.reviews -= Review(reviewId)
+        orderRepository.save(order)
+
+        return OrderDto.ForResult(order)
+    }
 }

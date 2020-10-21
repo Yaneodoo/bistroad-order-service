@@ -49,4 +49,16 @@ class OrderController(
         val deleted = orderService.deleteOrder(id)
         if (!deleted) throw OrderNotFoundException()
     }
+
+    @PostMapping("/orders/{id}/add-review")
+    @ApiOperation(value = "Add review for data integrity", hidden = true)
+    @PreAuthorize("isAuthenticated() and hasRole('ROLE_ADMIN')")
+    fun addReview(@PathVariable id: UUID, @RequestParam body: OrderRequest.AddReviewBody) =
+        orderService.addReview(id, body.reviewId)
+
+    @PostMapping("/orders/{id}/remove-review")
+    @ApiOperation(value = "Add review for data integrity", hidden = true)
+    @PreAuthorize("isAuthenticated() and hasRole('ROLE_ADMIN')")
+    fun removeReview(@PathVariable id: UUID, @RequestParam body: OrderRequest.RemoveReviewBody) =
+        orderService.removeReview(id, body.reviewId)
 }
