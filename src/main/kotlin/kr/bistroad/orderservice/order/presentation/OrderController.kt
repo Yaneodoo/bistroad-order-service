@@ -53,12 +53,12 @@ class OrderController(
     @PostMapping("/orders/{id}/add-review")
     @ApiOperation(value = "Add review for data integrity", hidden = true)
     @PreAuthorize("isAuthenticated() and hasRole('ROLE_ADMIN')")
-    fun addReview(@PathVariable id: UUID, @RequestParam body: OrderRequest.AddReviewBody) =
+    fun addReview(@PathVariable id: UUID, @RequestBody body: OrderRequest.AddReviewBody) =
         orderService.addReview(id, body.reviewId)
 
     @PostMapping("/orders/{id}/remove-review")
     @ApiOperation(value = "Add review for data integrity", hidden = true)
     @PreAuthorize("isAuthenticated() and hasRole('ROLE_ADMIN')")
-    fun removeReview(@PathVariable id: UUID, @RequestParam body: OrderRequest.RemoveReviewBody) =
+    fun removeReview(@PathVariable id: UUID, @RequestBody body: OrderRequest.RemoveReviewBody) =
         orderService.removeReview(id, body.reviewId)
 }
