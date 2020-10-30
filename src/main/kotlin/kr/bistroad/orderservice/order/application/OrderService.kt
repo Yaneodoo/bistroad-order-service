@@ -16,7 +16,8 @@ import java.util.*
 class OrderService(
     private val orderRepository: OrderRepository,
     private val orderedItemRepository: OrderedItemRepository,
-    private val storeRepository: StoreRepository
+    private val storeRepository: StoreRepository,
+    private val orderDtoMapper: OrderDtoMapper
 ) {
     fun createOrder(dto: OrderDto.ForCreate): OrderDto.ForResult {
         val store = storeRepository.findById(dto.storeId)
@@ -41,25 +42,26 @@ class OrderService(
             orderedItemRepository.addOrderCount(store.id, orderLine.item.id)
         }
 
-        return OrderDto.ForResult(order)
+        return orderDtoMapper.mapToDtoForResult(order)
     }
 
-    fun readOrder(id: UUID): OrderDto.ForResult? {
+    fun readOrder(id: UUID, fetchList: List<FetchTarget> = emptyList()): OrderDto.ForResult? {
         val order = orderRepository.findByIdOrNull(id) ?: return null
-        return OrderDto.ForResult(order)
+        return orderDtoMapper.mapToDtoForResult(order, fetchList)
     }
 
     fun searchOrders(
         userId: UUID?,
         storeId: UUID?,
-        pageable: Pageable
+        pageable: Pageable,
+        fetchList: List<FetchTarget> = emptyList()
     ): List<OrderDto.ForResult> =
         orderRepository.search(
             customerId = userId,
             storeId = storeId,
             pageable = pageable
         ).content
-            .map(OrderDto::ForResult)
+            .map { orderDtoMapper.mapToDtoForResult(it, fetchList) }
 
     fun updateOrder(id: UUID, dto: OrderDto.ForUpdate): OrderDto.ForResult {
         val order = orderRepository.findByIdOrNull(id) ?: throw OrderNotFoundException()
@@ -70,7 +72,7 @@ class OrderService(
         if (dto.progress != null) order.progress = dto.progress
 
         orderRepository.save(order)
-        return OrderDto.ForResult(order)
+        return orderDtoMapper.mapToDtoForResult(order)
     }
 
     fun deleteOrder(id: UUID): Boolean {
@@ -90,7 +92,7 @@ class OrderService(
         order.reviews += Review(reviewId)
         orderRepository.save(order)
 
-        return OrderDto.ForResult(order)
+        return orderDtoMapper.mapToDtoForResult(order)
     }
 
     fun removeReview(id: UUID, reviewId: UUID): OrderDto.ForResult {
@@ -99,6 +101,6 @@ class OrderService(
         order.reviews -= Review(reviewId)
         orderRepository.save(order)
 
-        return OrderDto.ForResult(order)
+        return orderDtoMapper.mapToDtoForResult(order)
     }
 }

@@ -11,7 +11,8 @@ import java.util.*
 interface OrderRequest {
     data class SearchParams(
         val userId: UUID?,
-        val storeId: UUID?
+        val storeId: UUID?,
+        val fetch: List<String>? = null
     )
 
     data class PostBody(

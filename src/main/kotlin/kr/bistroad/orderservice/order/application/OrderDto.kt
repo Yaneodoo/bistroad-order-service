@@ -8,6 +8,7 @@ import java.util.*
 import kr.bistroad.orderservice.order.domain.OrderLine as DomainOrderLine
 import kr.bistroad.orderservice.order.domain.Photo as DomainPhoto
 import kr.bistroad.orderservice.order.domain.Store as DomainStore
+import kr.bistroad.orderservice.order.domain.User as DomainUser
 
 interface OrderDto {
     data class ForCreate(
@@ -32,16 +33,18 @@ interface OrderDto {
         val id: UUID,
         val store: Store,
         val userId: UUID,
+        val user: User? = null,
         val orderLines: List<OrderLine>,
         val timestamp: OffsetDateTime,
         val tableNum: Int,
         val progress: OrderProgress,
         val hasReview: Boolean
     ) : OrderDto {
-        constructor(domain: PlacedOrder) : this(
+        constructor(domain: PlacedOrder, domainCustomer: DomainUser?) : this(
             id = domain.id,
             store = Store(domain.store),
             userId = domain.customer.id,
+            user = domainCustomer?.let(::User),
             orderLines = domain.orderLines.map(ForResult::OrderLine),
             timestamp = domain.timestamp,
             tableNum = domain.tableNum,
@@ -55,6 +58,24 @@ interface OrderDto {
             val name: String
         ) {
             constructor(domain: DomainStore) : this(domain.id, domain.owner.id, domain.name)
+        }
+
+        data class User(
+            val id: UUID,
+            var username: String,
+            var fullName: String,
+            var phone: String,
+            var role: String,
+            var photo: Photo? = null
+        ) {
+            constructor(domain: DomainUser) : this(
+                id = domain.id,
+                username = domain.username,
+                fullName = domain.fullName,
+                phone = domain.phone,
+                role = domain.role,
+                photo = domain.photo?.let(::Photo)
+            )
         }
 
         data class OrderLine(

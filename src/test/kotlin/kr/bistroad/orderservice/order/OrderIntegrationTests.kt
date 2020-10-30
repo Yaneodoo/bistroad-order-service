@@ -47,8 +47,21 @@ internal class OrderIntegrationTests {
         val order = randomOrder()
         orderRepository.save(order)
 
+        val fetchedUser = User(
+            id = order.customer.id,
+            username = "example",
+            fullName = "example",
+            phone = "010-1234-1234",
+            role = "ROLE_USER",
+            photo = null
+        )
+        every {
+            restTemplate.getForObject<User>("http://user-service:8080/users/${fetchedUser.id}")
+        } returns fetchedUser
+
         mockMvc.perform(
             get("/orders/${order.id}")
+                .param("fetch", "customer")
                 .accept(MediaType.APPLICATION_JSON)
         ).andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -56,6 +69,7 @@ internal class OrderIntegrationTests {
             .andExpect(jsonPath("\$.store.id").value(order.store.id.toString()))
             .andExpect(jsonPath("\$.store.name").value(order.store.name))
             .andExpect(jsonPath("\$.userId").value(order.customer.id.toString()))
+            .andExpect(jsonPath("\$.user.username").value(fetchedUser.username))
             .andExpect(jsonPath("\$.progress").value(order.progress.toString()))
     }
 

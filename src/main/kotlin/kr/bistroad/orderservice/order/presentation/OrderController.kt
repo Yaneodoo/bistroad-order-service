@@ -3,6 +3,7 @@ package kr.bistroad.orderservice.order.presentation
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import kr.bistroad.orderservice.global.error.exception.OrderNotFoundException
+import kr.bistroad.orderservice.order.application.FetchTarget
 import kr.bistroad.orderservice.order.application.OrderService
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
@@ -17,8 +18,11 @@ class OrderController(
 ) {
     @GetMapping("/orders/{id}")
     @ApiOperation("\${swagger.doc.operation.order.get-order.description}")
-    fun getOrder(@PathVariable id: UUID) =
-        orderService.readOrder(id) ?: throw OrderNotFoundException()
+    fun getOrder(@PathVariable id: UUID, @RequestParam(required = false) fetch: List<String>? = null) =
+        orderService.readOrder(
+            id = id,
+            fetchList = fetch?.map { FetchTarget.from(it) } ?: emptyList()
+        ) ?: throw OrderNotFoundException()
 
     @GetMapping("/orders")
     @ApiOperation("\${swagger.doc.operation.order.get-orders.description}")
@@ -26,7 +30,8 @@ class OrderController(
         orderService.searchOrders(
             userId = params.userId,
             storeId = params.storeId,
-            pageable = pageable
+            pageable = pageable,
+            fetchList = params.fetch?.map { FetchTarget.from(it) } ?: emptyList()
         )
 
     @PostMapping("/orders")
